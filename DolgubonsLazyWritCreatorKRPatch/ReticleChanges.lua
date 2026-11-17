@@ -27,6 +27,7 @@ if EsoKR and EsoKR:isKorean() then -- 추가
 			-- If the setting is off exit
 
 			if not WritCreater:GetSettings().changeReticle then  original(self, text) return end
+				if type(text) ~= "string" then  original(self, text) return end -- 추가: removeIndex 는 문자열만 받는다
 				text = EsoKR:removeIndex(text) -- 추가
 			
 				-- if not a station exit
@@ -53,53 +54,11 @@ if EsoKR and EsoKR:isKorean() then -- 추가
 
 		setupReplacement(ZO_ReticleContainerInteractContext, "SetText")
 	end
-end --추가
 
-local oldInteract = INTERACTIVE_WHEEL_MANAGER.StartInteraction
-
-
-local function hook(...)
-	if WritCreater:GetSettings().stealProtection then
-		local _, hasWrits = WritCreater.writSearch()
-		if not hasWrits then
-			return oldInteract(...)
-		end
-		local action, _, isBlocked, isOwned, additional,_,_,isCriminal = GetGameCameraInteractableActionInfo()
-		if isBlocked then
-			return oldInteract(...)
-		end
-		if isCriminal then
-			local isStealthed = GetUnitStealthState("player")
-			if isStealthed == 3 or isStealthed == 5 then
-				return oldInteract(...)
-			else
-				d("The Lazy Writ Crafter has saved you from stealing while doing writs!")
-				return isCriminal
-			end
-		end
-		return oldInteract(...)
+	-- 원본의 초기화가 이미 끝난 뒤에 이 파일이 로드됐다면, 원본은 재정의 전의 함수를 이미
+	-- 호출했으므로 위 함수는 불리지 않는다. 그 경우에만 직접 한 번 적용한다.
+	-- (초기화 전에 로드됐다면 원본이 위 함수를 호출해 준다.)
+	if WritCreater.writNames then
+		WritCreater.initializeReticleChanges()
 	end
-	return oldInteract(...)
-end
-INTERACTIVE_WHEEL_MANAGER.StartInteraction = hook
-
-
-local jewelryName =zo_strformat("<<1>>",GetItemLinkName("|H1:item:138799:6:1:0:0:0:24:255:5:325:28:0:0:0:0:0:0:0:0:0:4320001|h|h"))
-local function dialogHook(...)
-	zo_callLater(function()
-		if ZO_Dialog1 and ZO_Dialog1.textParams and ZO_Dialog1.textParams.mainTextParams then
-			local itemName= ZO_Dialog1.textParams.mainTextParams[1]
-			if  WritCreater:GetSettings().EZJewelryDestroy and string.find(itemName ,jewelryName )then
-				for k, v in pairs(ZO_Dialog1.textParams.mainTextParams) do
-					if v == string.upper(v) then
-						ZO_Dialog1EditBox:SetText(v)
-						ZO_Dialog1EditBox:LoseFocus()
-					end
-				end
-
-			end
-		end
-	end, 10)
-end
-
-ZO_PreHook("ZO_Dialogs_ShowDialog", dialogHook)
+end --추가
