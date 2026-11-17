@@ -27,6 +27,7 @@ if EsoKR and EsoKR:isKorean() then -- 추가
 			-- If the setting is off exit
 
 			if not WritCreater:GetSettings().changeReticle then  original(self, text) return end
+				if type(text) ~= "string" then  original(self, text) return end -- 추가: removeIndex 는 문자열만 받는다
 				text = EsoKR:removeIndex(text) -- 추가
 			
 				-- if not a station exit
@@ -52,5 +53,12 @@ if EsoKR and EsoKR:isKorean() then -- 추가
 		end
 
 		setupReplacement(ZO_ReticleContainerInteractContext, "SetText")
+	end
+
+	-- 원본의 초기화가 이미 끝난 뒤에 이 파일이 로드됐다면, 원본은 재정의 전의 함수를 이미
+	-- 호출했으므로 위 함수는 불리지 않는다. 그 경우에만 직접 한 번 적용한다.
+	-- (초기화 전에 로드됐다면 원본이 위 함수를 호출해 준다.)
+	if WritCreater.writNames then
+		WritCreater.initializeReticleChanges()
 	end
 end --추가

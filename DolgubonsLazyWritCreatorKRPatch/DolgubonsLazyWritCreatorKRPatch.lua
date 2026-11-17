@@ -57,5 +57,12 @@ if EsoKR and EsoKR:isKorean() then
 
 	WritCreater.lang = EsoKR:getLanguage()
 
+	-- 원본은 초기화 때 langWritNames() 결과를 WritCreater.writNames 에 저장해 두고 쓴다.
+	-- 이 파일이 그 뒤에 로드된 경우 저장된 값이 영어로 남으므로 한국어로 다시 채운다.
+	-- (초기화 전에 로드됐다면 writNames 가 아직 없고, 원본이 위 함수로 직접 채운다.)
+	if WritCreater.writNames then
+		WritCreater.writNames = WritCreater.langWritNames()
+	end
+
 	WritCreater.strings["moreStyle"] 					= EsoKR:E("|cf60000사용 가능한 스타일 재료 없음.\n인벤토리나 설정을 확인|r")
 end
