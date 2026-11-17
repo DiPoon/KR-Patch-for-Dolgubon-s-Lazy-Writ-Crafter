@@ -3,7 +3,7 @@
 ## APIVersion: 100027
 ## Author: @Whya5448 @dedo2 @DiPoon
 ## Version: 1.1.2
-## DependsOn: DolgubonsLazyWritCreator EsoKR
+## DependsOn: DolgubonsLazyWritCreator>=4005 EsoKR
 
 DolgubonsLazyWritCreatorKRPatch.lua
 ReticleChanges.lua
